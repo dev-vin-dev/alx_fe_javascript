@@ -86,7 +86,9 @@ function createAddQuoteForm() {
 
 createAddQuoteForm();
 
-newQuoteBtn.addEventListener("click", displayRandomQuote);
+const showRandomQuote = displayRandomQuote
+
+newQuoteBtn.addEventListener("click", showRandomQuote);
 
 //Populate categories on initial load
 populateCategories();
