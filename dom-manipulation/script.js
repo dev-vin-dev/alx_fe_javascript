@@ -1,6 +1,6 @@
+const API_URL = "https://jsonplaceholder.typicode.com/posts"
+
 let quotes = [];
-
-
 
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
@@ -158,4 +158,44 @@ const lastQuote = sessionStorage.getItem("lastQuote");
 if (lastQuote) {
     const quote = JSON.parse(lastQuote);
     quoteDisplay.innerHTML = `"${quote.text}" <br><small>-${quote.category}</small>`
+}
+
+//Server Sync Simulation
+function fetchFromServer() {
+    fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+        const serverQuotes = data.slice(0, 5).map(post => ({
+            id: post.id,
+            text: post.title,
+            category: "Server"
+        }));
+
+        let conflicts = 0;
+        const ids = new set(quotes.map (q => q.id));
+
+        serverQuotes.forEach(q=>{
+            if (!ids.has(q.id)) {
+                quotes.push(q); //No conflict
+            } else {
+                conflicts++;
+                quotes = quotes.map(localQ => localQ.id === q.id ? q : localQ);
+            }
+        });
+
+        if (conflicts > 0) {
+            alert (`${conflicts} quotes(s) were updated from the Server (conflict resolved).`)          
+        }
+        saveQuotes();
+        populateCategories();
+    })
+    .catch(err => console.error("Server sync error:", err));
+}
+//Auto-sync every 30 seconds
+setInterval(fetchFromServer,30000);
+
+//Manual Conflict resoultion button (optional)
+function resolveConflictsManually() {
+    fetchFromServer(); //Re-trigger manual sync
+    alert("Manual sync triggered.")
 }
