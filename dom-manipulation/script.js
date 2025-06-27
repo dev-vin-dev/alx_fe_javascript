@@ -1,12 +1,25 @@
-const quotes = [
-    {text:"The only limit to our realization of tomorrow is our doubts of today.", category:"Motivation"},
-    {text:"Lie is what happens when you're busy", category:"Life"},
-    {text:"In the middle of every opportunity lies opportunity", category:"Inspiration"}
-];
+let quotes = [];
+
+
 
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
 const categorySelect = document.getElementById("categorySelect");
+
+//Load from Local Storage
+function loadQuotes () {
+    const stored = localStorage.getItem("quotes");
+    quotes = stored ? JSON.parse(stored) : [
+        {text:"The only limit to our realization of tomorrow is our doubts of today.", category:"Motivation"},
+    {text:"Lie is what happens when you're busy", category:"Life"},
+    {text:"In the middle of every opportunity lies opportunity", category:"Inspiration"}
+    ];
+}
+
+//Save to Local Storage
+function saveQuotes () {
+    localStorage.setItem("quotes", JSON.stringify(quotes))
+}
 
 //Populate categories on Load
 function populateCategories (){
@@ -60,6 +73,40 @@ function addQuote () {
     alert("Quote added successfully")
 }
 
+//Export quotes to JSON
+function exportToJson() {
+    const blob = new Blob([JSON.stringify(quotes, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "quotes.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+//Import quotes from uploaded JSON file
+function importFromJsonFile (event) {
+    const fileReader = new FileReader ();
+    fileReader.onload = function (event) {
+        try {
+            const importedQuotes = JSON.parse(event.target.result);
+            if (!Array.isArray(importedQuotes)) throw new Error("Invalid JSON format.");
+            quotes.push(...importedQuotes);
+            saveQuotes();
+            populateCategories();
+            alert ("Quotes imported successfully!");
+        } catch (e) {
+            alert ("Failed to import quotes: " + e.message);
+        }
+    };
+    fileReader.readAsText(event.target.files[0]);
+}
+
+loadQuotes();
+
+
 function createAddQuoteForm() {
   const formContainer = document.createElement("div");
 
@@ -92,3 +139,10 @@ newQuoteBtn.addEventListener("click", showRandomQuote);
 
 //Populate categories on initial load
 populateCategories();
+
+//Restore last quote on session storage
+const lastQuote = sessionStorage.getItem("lastQuote");
+if (lastQuote) {
+    const quote = JSON.parse(lastQuote);
+    quoteDisplay.innerHTML = `"${quote.text}" <br><small>-${quote.category}</small>`
+}
