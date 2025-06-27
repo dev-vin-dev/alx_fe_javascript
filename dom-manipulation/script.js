@@ -4,7 +4,8 @@ let quotes = [];
 
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
-const categorySelect = document.getElementById("categorySelect");
+const categorySelect = document.getElementById("categorySelect");//For Adding Quotes
+const categoryFilter = document.getElementById("categoryFilter");
 
 //Load from Local Storage
 function loadQuotes () {
@@ -21,9 +22,14 @@ function saveQuotes () {
     localStorage.setItem("quotes", JSON.stringify(quotes))
 }
 
-//Populate categories on Load
+//Populate categories on Load (add + filter)
 function populateCategories (){
     const categories = [...new set(quotes.map(q => q. category))];
+
+    //Reset dropdowns
+    categorySelect.innerHTML="";
+    categoryFilter.innerHTML="<option value>";
+
     categories.forEach(cat => {
         if (![...categorySelect.options].some(option => option.value === cat)) {
             const option = document.createElement("option");
@@ -51,6 +57,13 @@ function displayRandomQuote () {
 
     quoteDisplay.innerHTML = `"${quote.text}" <br><small>-${quote.category}</small>`;
 
+}
+
+//Filter quotes when drop down
+function filterQuotes (){
+    const selected = categoryFilter.value;
+    localStorage.setItem("selectedCategoryFilter", selected);
+    displayRandomQuote();
 }
 
 //Add a new quote from input
