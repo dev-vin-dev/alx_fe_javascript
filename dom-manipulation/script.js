@@ -22,7 +22,7 @@ function populateCategories (){
 }
 
 //Show a random quote based on selected category
-function showRandomQuote () {
+function displayRandomQuote () {
     const selectedCategory = categorySelect.value;
     let filteredQuotes = quotes;
 
@@ -34,7 +34,10 @@ function showRandomQuote () {
         return;
     }
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
-    quoteDisplay.textContent =`${filteredQuotes[randomIndex].text}" - ${filteredQuotes[randomIndex].category}`;
+    const quote = filteredQuotes[randomIndex];
+
+    quoteDisplay.innerHTML = `"${quote.text}" <br><small>-${quote.category}</small>`;
+
 }
 
 //Add a new quote from input
