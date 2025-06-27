@@ -161,7 +161,7 @@ if (lastQuote) {
 }
 
 //Server Sync Simulation
-function fetchFromServer() {
+function fetchQuotesFromServer() {
     fetch(API_URL)
     .then(res => res.json())
     .then(data => {
@@ -192,10 +192,10 @@ function fetchFromServer() {
     .catch(err => console.error("Server sync error:", err));
 }
 //Auto-sync every 30 seconds
-setInterval(fetchFromServer,30000);
+setInterval(fetchQuotesFromServer,30000);
 
 //Manual Conflict resoultion button (optional)
 function resolveConflictsManually() {
-    fetchFromServer(); //Re-trigger manual sync
+    fetchQuotesFromServer; //Re-trigger manual sync
     alert("Manual sync triggered.")
 }
